@@ -1,6 +1,45 @@
+import { useState } from "react";
 import "./App.css";
+import { useEffect } from "react";
+
+const words = [
+  "bermain",
+  "sangat",
+  "langka",
+  "aku",
+  "dia",
+  "kita",
+  "mereka",
+  "joke",
+  "developer",
+  "angin",
+  "hero",
+  "javascript",
+  "rumah",
+  "makan",
+  "java",
+  "lampung",
+  "indonesia",
+  "sungai",
+  "danau",
+  "canda",
+  "kaki",
+  "master",
+  "tawa",
+  "laptop",
+];
 
 function App() {
+  const [keyKata, setKeyKata] = useState("");
+
+  useEffect(() => {
+    tampilKata(words);
+  }, []);
+
+  const tampilKata = (words) => {
+    const ranIndex = Math.floor(Math.random() * words.length);
+    setKeyKata(words[ranIndex]);
+  };
   return (
     <>
       <header
@@ -30,7 +69,7 @@ function App() {
         <div className="row">
           <div className="col-md-6 mx-auto">
             <h2 className="display-1 mb-5" style={{ fontFamily: "sans-serif" }}>
-              Nama
+              {keyKata}
             </h2>
 
             <input
