@@ -2,6 +2,14 @@ import { useState } from "react";
 import "./App.css";
 import { useEffect } from "react";
 
+const levels = {
+  easy: 5,
+  medium: 3,
+  hard: 1
+}
+const currentLevel = levels.medium;
+let time = levels.medium;
+
 const words = [
   "bermain",
   "sangat",
@@ -31,15 +39,50 @@ const words = [
 
 function App() {
   const [keyKata, setKeyKata] = useState("");
+  const [input, setInput] = useState("");
+  const [timeS, setTimeS] = useState(time);
+  const [bermain, setBermain] = useState(false); 
+  const [keterangan, setKeterangan] = useState("");
+  const [skor, setSkor] = useState(0);
 
   useEffect(() => {
     tampilKata(words);
+    setInterval(hitungMundur, 1000);
   }, []);
 
   const tampilKata = (words) => {
     const ranIndex = Math.floor(Math.random() * words.length);
     setKeyKata(words[ranIndex]);
   };
+
+  useEffect(() => {
+    if(input === keyKata && input.length > 0) {
+      tampilKata(words)
+      setInput("");
+      setBermain(true);
+      setKeterangan("Benar!");
+      time = currentLevel + 1;
+      setTimeS(time);
+      setSkor(data => data + 1);
+    }
+  },[input])
+
+const hitungMundur = () => {
+  if(time > 0) {
+    time--;
+  }else if(time===0) {
+    setBermain(false)
+  }
+  setTimeS(time);
+}
+
+const cekStatus = () => {
+  if(!bermain && time===0) {
+    setKeterangan("Game Over!")
+  }
+}
+setInterval(cekStatus, 50);
+
   return (
     <>
       <header
@@ -50,12 +93,12 @@ function App() {
       </header>
       <div className="col-4">
         <h3>
-          <span>Waktu : 05</span>
+          <span>Waktu : {time || timeS}</span>
         </h3>
       </div>
       <div className="col-4">
         <h3>
-          <span>Skor : 9</span>
+          <span>Skor : {skor}</span>
         </h3>
       </div>
 
@@ -71,14 +114,8 @@ function App() {
             <h2 className="display-1 mb-5" style={{ fontFamily: "sans-serif" }}>
               {keyKata}
             </h2>
-
-            <input
-              type="text"
-              value=""
-              className="form-control form-control-lg"
-              placeholder="Mulai mengetik..."
-            />
-            <h4 className="mt-3">Benar!</h4>
+            <input type="text" value={input} onChange={(e) => setInput(e.target.value)} className="form-control form-control-lg" placeholder="Mulai mengetik..." />
+            <h4 className="mt-3">{keterangan}</h4>
             <div className="row mt-5" style={{ cursor: "pointer" }}>
               <div className="col-md-12">
                 <div
