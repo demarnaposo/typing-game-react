@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { useEffect } from "react";
+import { Button, Modal } from "react-bootstrap";
 
 const levels = {
   easy: 5,
@@ -38,12 +39,23 @@ const words = [
 ];
 
 function App() {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => { 
+    setShow(false);
+    time = currentLevel;
+    setInput("")
+    setSkor(0);
+
+  }
+  const handleShow = () => setShow(true);
   const [keyKata, setKeyKata] = useState("");
   const [input, setInput] = useState("");
   const [timeS, setTimeS] = useState(time);
   const [bermain, setBermain] = useState(false); 
   const [keterangan, setKeterangan] = useState("");
   const [skor, setSkor] = useState(0);
+  const [skorTertinggi, setSkorTertinggi] = useState(sessionStorage['highscore']);
 
   useEffect(() => {
     tampilKata(words);
@@ -65,6 +77,16 @@ function App() {
       setTimeS(time);
       setSkor(data => data + 1);
     }
+
+  if(typeof sessionStorage['highscore'] === "undefined" || skor > sessionStorage['highscore']){
+    sessionStorage['highscore'] = skor;
+  }
+
+  if (sessionStorage['highscore'] >= 0){
+
+    setSkorTertinggi(sessionStorage['highscore'])
+
+  }
   },[input])
 
 const hitungMundur = () => {
@@ -79,12 +101,43 @@ const hitungMundur = () => {
 const cekStatus = () => {
   if(!bermain && time===0) {
     setKeterangan("Game Over!")
+    setShow(true);
   }
 }
 setInterval(cekStatus, 50);
 
+const highskor = () => {
+  if(sessionStorage['highscore'] != "undefined"){
+    sessionStorage['highscore'] = 0;
+    setSkorTertinggi(0);
+  }
+}
+
   return (
     <>
+
+{/* <Button variant="primary" onClick={handleShow}>
+        Launch demo modal
+      </Button> */}
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h1 className="text-center">{skor}</h1>
+        </Modal.Body>
+        <Modal.Footer>
+        <Button variant="danger" onClick={highskor}>
+            Reset Skor Tertinggi
+          </Button>
+          <Button variant="secondary" onClick={handleClose}>
+            Mulai
+          </Button>
+          
+        </Modal.Footer>
+      </Modal>
+
       <header
         className="text-center text-white p-3 mb-5"
         style={{ backgroundColor: "#77ACF1" }}
@@ -104,7 +157,7 @@ setInterval(cekStatus, 50);
 
       <div className="col-4">
         <h3>
-          <span>Skor Tertinggi : 10</span>
+          <span>Skor Tertinggi : {skorTertinggi}</span>
         </h3>
       </div>
 
@@ -118,7 +171,7 @@ setInterval(cekStatus, 50);
             <h4 className="mt-3">{keterangan}</h4>
             <div className="row mt-5" style={{ cursor: "pointer" }}>
               <div className="col-md-12">
-                <div
+                <div onClick={() => highskor()}
                   className="card card-body text-white"
                   style={{ backgroundColor: "#77ACF1" }}
                 >
